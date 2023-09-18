@@ -1,0 +1,106 @@
+get_filename_component(STM32CUBEF4_CMSIS_BASE "${stm32cubef4_SOURCE_DIR}/Drivers/CMSIS" REALPATH)
+
+set(STM32CUBEF4_CMSIS_DEVICE_BASE "${STM32CUBEF4_CMSIS_BASE}/Device/ST/TSM32F4xx")
+set(STM32CUBEF4_CMSIS_STARTUP_BASE ${STM32CUBEF4_CMSIS_DEVICE_BASE}/Source/Templates/gcc)
+set(STM32CUBEF4_CMSIS_CURRENT_LEN 0)
+
+
+
+
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+  # message(STATUS "Startup file ${STM32CUBEF4_CMSIS_STARTUP_FILE}")
+  # # Find startup file
+  # if(EXISTS "${STM32CUBEF4_CMSIS_STARTUP_FILE}")
+  # elseif(EXISTS "${STM32CUBEF4_CMSIS_STARTUP_BASE}/${STM32CUBEF4_CMSIS_STARTUP_FILE}")
+  #   set(STM32CUBEF4_CMSIS_STARTUP_FILE ${STM32CUBEF4_CMSIS_STARTUP_BASE}/${STM32CUBEF4_CMSIS_STARTUP_FILE})
+  # elseif(EXISTS ${STM32CUBEF4_CMSIS_DEVICE_BASE}/Source/Templates/gcc/startup_${STM32CUBEF4_DEVICE_L}.s)
+  #   # Simple solution (direct match)
+  #   set(STM32CUBEF4_CMSIS_STARTUP_FILE ${STM32CUBEF4_CMSIS_DEVICE_BASE}/Source/Templates/gcc/startup_${STM32CUBEF4_DEVICE_L}.s)
+  # else()
+  #   # Complicated solution, match family and chip revision
+  #   file(GLOB STM32CUBEF4_CMSIS_STARTUP_FILES RELATIVE ${STM32CUBEF4_CMSIS_STARTUP_BASE} ${STM32CUBEF4_CMSIS_STARTUP_BASE}/startup_${STM32CUBEF4_CPU_TYPE_L}*.s)
+  #   foreach(FILE ${STM32CUBEF4_CMSIS_STARTUP_FILES})
+  #     string(REGEX REPLACE "\\.[^.]*$" "" STM32CUBEF4_CMSIS_TEST_FILE ${FILE})
+  #     string(REGEX REPLACE "x" "[a-zA-Z]" STM32CUBEF4_CMSIS_TEST_FILE ${STM32CUBEF4_CMSIS_TEST_FILE})
+  #     set(STM32CUBEF4_CMSIS_TEST_MATCH false)
+  #     string(REGEX MATCH "^(${STM32CUBEF4_CMSIS_TEST_FILE})" STM32CUBEF4_CMSIS_TEST_MATCH "startup_${STM32CUBEF4_DEVICE_L}.s")
+  #     if(STM32CUBEF4_CMSIS_TEST_MATCH)
+  #       string(LENGTH ${FILE} STM32CUBEF4_CMSIS_FILE_LEN)
+  #       if(${STM32CUBEF4_CMSIS_FILE_LEN} GREATER ${STM32CUBEF4_CMSIS_CURRENT_LEN}})
+  #         set(STM32CUBEF4_CMSIS_STARTUP_FILE ${STM32CUBEF4_CMSIS_STARTUP_BASE}/${FILE})
+  #         string(LENGTH ${FILE} STM32CUBEF4_CMSIS_CURRENT_LEN)
+  #       endif()
+  #     endif()
+  #   endforeach(FILE)
+  # endif()
+
+  # set(STM32CUBEF4_CMSIS_STARTUP_FILE ${stm32cubef4_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.s)
+  # message(STATUS "Startup file ${STM32CUBEF4_CMSIS_STARTUP_FILE}")
+
+  # if (EXISTS "${STM32CUBEF4_CMSIS_STARTUP_FILE}")
+  #   string(REPLACE ${PROJECT_SOURCE_DIR}  "" STM32CUBEF4_CMSIS_STARTUP_FILE_NO_PROJECT_DIR ${STM32CUBEF4_CMSIS_STARTUP_FILE})
+  #   message("    Startup file: ${STM32CUBEF4_CMSIS_STARTUP_FILE_NO_PROJECT_DIR}")
+  # else()
+  #   message(FATAL_ERROR "Startup file ${STM32CUBEF4_CMSIS_STARTUP_FILE} not found")
+  # endif()
+
+  # Set system file name
+  set(CMSIS_SYSTEM_FILE ${stm32cubef4_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c)
+
+
+  add_library(stm32cubef4-cmsis
+    ${stm32cubef4_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc/startup_stm32f401xe.s
+    ${CMSIS_SYSTEM_FILE}
+    )
+
+  target_include_directories(stm32cubef4-cmsis SYSTEM
+	PUBLIC
+    ${stm32cubef4_SOURCE_DIR}/Drivers/CMSIS/Include
+    ${stm32cubef4_SOURCE_DIR}/Drivers/CMSIS/Device/ST/STM32F4xx/Include
+
+	  #${STM32CUBEF4_CMSIS_BASE}/Include
+	  #${STM32CUBEF4_CMSIS_DEVICE_BASE}/Include
+  )
+
+  target_compile_options(stm32cubef4-cmsis
+    PUBLIC
+    #-DSTM32F401RE -D${STM32CUBEF4_DEVICE} 
+    -DSTM32F401xE
+    #-D${STM32CUBEF4_CPU_TYPE_U}xx -D${STM32CUBEF4_CPU_FAMILY_U} -D${STM32CUBEF4_CPU_FAMILY_A}
+  )
+
+  set_target_properties(stm32cubef4-cmsis PROPERTIES LINKER_LANGUAGE CXX)
+  # target_compile_options(stm32cubef4-cmsis
+  # INTERFACE
+  #   -D # -D${STM32CUBEF4_CPU_TYPE_U}xx -D${STM32CUBEF4_CPU_FAMILY_U} -D${STM32CUBEF4_CPU_FAMILY_A}
+  # )
+
+else()
+
+  add_library(stm32cubef4-cmsis INTERFACE
+    )
+
+  target_include_directories(stm32cubef4-cmsis SYSTEM
+	INTERFACE
+	  ${STM32CUBEF4_CMSIS_BASE}/Include
+	  ${STM32CUBEF4_CMSIS_DEVICE_BASE}/Include
+  )
+
+  set_target_properties(stm32cubef4-cmsis PROPERTIES LINKER_LANGUAGE CXX)
+  # target_compile_options(stm32cubef4-cmsis
+  # INTERFACE
+  #   -DSTM32F401xx # -D${STM32CUBEF4_CPU_TYPE_U}xx -D${STM32CUBEF4_CPU_FAMILY_U} -D${STM32CUBEF4_CPU_FAMILY_A}
+  # )
+
+  target_compile_options(stm32cubef4-cmsis
+    INTERFACE
+      -D${STM32CUBEF4_DEVICE} -D${STM32CUBEF4_CPU_TYPE_U}xx -D${STM32CUBEF4_CPU_FAMILY_U} -D${STM32CUBEF4_CPU_FAMILY_A}
+  )
+
+endif()
+
+
+# message(STATUS "STM32CUBEF4_DEVICE ${STM32CUBEF4_DEVICE}")
+# message(STATUS "STM32CUBEF4_CPU_TYPE_U ${STM32CUBEF4_CPU_TYPE_U}")
+# message(STATUS "STM32CUBEF4_CPU_FAMILY_U ${STM32CUBEF4_CPU_FAMILY_U}")
+# message(STATUS "STM32CUBEF4_CPU_FAMILY_A ${STM32CUBEF4_CPU_FAMILY_A}")

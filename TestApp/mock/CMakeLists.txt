@@ -1,0 +1,3 @@
+add_subdirectory(MessageBufferMock)
+add_subdirectory(SemaphoreMock)
+add_subdirectory(CommunicationChannelMock)
