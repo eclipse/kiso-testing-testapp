@@ -19,7 +19,6 @@ add_library(Tier1competetion
 target_include_directories(Tier1competetion
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/Tier1competetion
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/DemoappTypes
   )
 # Specify c++ compile features used in the Tier1competetion
 target_compile_features(Tier1competetion
@@ -29,7 +28,7 @@ target_compile_features(Tier1competetion
 # Tier1competetion dependencies
 target_link_libraries(Tier1competetion
   PUBLIC
-    
+    DemoappTypes
     OsExtension
     etl
   )
