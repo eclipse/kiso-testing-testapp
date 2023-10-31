@@ -1,0 +1,8 @@
+add_custom_target(doxygen-testapp)
+add_subdirectory(TestRegistry)
+add_subdirectory(TestEnvironment)
+add_subdirectory(MessageHandler)
+add_subdirectory(TestRunner)
+#add_subdirectory(TPC)
+add_subdirectory(CommunicationChannel)
+add_subdirectory(Tier1competetion)
